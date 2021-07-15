@@ -31,7 +31,7 @@ int main() {
     rook.setOrigin(-10,-10);
 
     bool mouse_pressed_on_pawn = false;
-    Vector2i decalage_mouse_pawn;
+    Vector2f decalage_mouse_pawn;
 
 	
     while(window.isOpen()) {
@@ -50,14 +50,14 @@ int main() {
 
 	    		case Event::MouseButtonPressed:
 
-	    			std::cout << "button mouse pressed\n";
-	    			std::cout << "x pos " + std::to_string(Mouse::getPosition(window).x) + "\n";
+	    			// std::cout << "button mouse pressed\n";
+	    			// std::cout << "x pos " + std::to_string(Mouse::getPosition(window).x) + "\n";
 
 	    			// if mouse is on a pawn
-	    			if(rook.getGlobalBounds().contains(Mouse::getPosition(window).x, Mouse::getPosition(window).y)){
+	    			if(rook.getGlobalBounds().contains(Vector2f(Mouse::getPosition(window))))	{
 	    				std::cout << "pawn selected \n";
 	    				mouse_pressed_on_pawn = true;
-	    				decalage_mouse_pawn = Vector2i(Mouse::getPosition(window).x - rook.getPosition().x,Mouse::getPosition(window).y - rook.getPosition().y);
+	    				decalage_mouse_pawn = Vector2f(Mouse::getPosition(window)) - rook.getPosition();
 	    			}
 	    			break;
 
@@ -73,8 +73,7 @@ int main() {
 
 	    		case Event::MouseMoved:
 	    			if(mouse_pressed_on_pawn) {
-	    				std::cout << std::to_string(Mouse::getPosition(window).x)+"\n";
-	    				rook.setPosition(Mouse::getPosition(window).x - decalage_mouse_pawn.x, Mouse::getPosition(window).y - decalage_mouse_pawn.y);
+	    				rook.setPosition(Vector2f(Mouse::getPosition(window)) - decalage_mouse_pawn);
 	    			}
     		}
 
