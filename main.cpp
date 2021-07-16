@@ -5,37 +5,73 @@
 
 using namespace sf;
 
+
+Texture texture_board, texture_pawns;
+
+Sprite pawns[32];
+
+int b[8][8] = 
+	{
+		1,2,3,4,5,3,2,1,
+		6,6,6,6,6,6,6,6,
+		0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,
+		-6,-6,-6,-6,-6,-6,-6,-6,
+		-1,-2,-3,-4,-5,-3,-2,-1,
+	};
+
+void set_origin_pos() {
+
+
+	int h = 0;
+	for(int i=0;i<8;i++) {
+		for(int j=0;j<8;j++) {
+			int n = b[i][j];
+			if(n == 0) continue;
+			pawns[h].setTexture(texture_pawns);
+			pawns[h].setPosition(j*75,i*75 );
+			pawns[h].setTextureRect(IntRect(56*(abs(n)-1),60*(abs(n)/n+1)/2,56,56));
+			h++;
+		}
+	}
+
+}
+
+
+
+
 int main() {
 
     RenderWindow window(VideoMode(600, 600), "SFML window");
 
 
-    Texture board, pawns;
-    if(!board.loadFromFile("images/board.png"))
+    if(!texture_board.loadFromFile("images/board.png"))
     	return EXIT_FAILURE;
 
-    IntRect size_rook(0,0,50,55);
+    IntRect size_rook(0,0,56,60); // x, y , x, y
 
 
-    if(!pawns.loadFromFile("images/pawns.jpg"))
+    if(!texture_pawns.loadFromFile("images/pawns.png"))
     	return EXIT_FAILURE;
 
 
-    board.setSmooth(true);
-    pawns.setSmooth(true);
+    Sprite board(texture_board);
 
-    Sprite sprite(board);
+    Sprite rook(texture_pawns);
 
-    Sprite rook(pawns);
-    Sprite knight(pawns);
 
     rook.setTextureRect(size_rook);
 
-    rook.setOrigin(-10,-10);
+    rook.setPosition(0,0);
 
     bool mouse_pressed_on_pawn = false;
     Vector2f decalage_mouse_pawn;
 
+    int n ;
+
+    set_origin_pos();
 	
     while(window.isOpen()) {
 
@@ -59,10 +95,11 @@ int main() {
 	    			// std::cout << "x pos " + std::to_string(Mouse::getPosition(window).x) + "\n";
 
 	    			// if mouse is on a pawn
-	    			if(rook.getGlobalBounds().contains(mouse_pos))	{
+	    			for(int i = 0; i<32; i++)
+	    			if(pawns[i].getGlobalBounds().contains(mouse_pos))	{
 	    				std::cout << "pawn selected \n";
-	    				mouse_pressed_on_pawn = true;
-	    				decalage_mouse_pawn = mouse_pos - rook.getPosition();
+	    				mouse_pressed_on_pawn = true; n = i;
+	    				decalage_mouse_pawn = mouse_pos - pawns[i].getPosition();
 	    			}
 	    			break;
 
@@ -71,14 +108,20 @@ int main() {
 
 	    			// if mouse is in sprite
     				std::cout << "button mouse released \n";
-    				mouse_pressed_on_pawn = false;
 
+    				if(mouse_pressed_on_pawn){
+	    				Vector2f new_pos = Vector2f(75 * int(mouse_pos.x/75), 75 * int(mouse_pos.y/75));
+	    				pawns[n].setPosition(new_pos);
+    				}
+    				
+    				mouse_pressed_on_pawn = false;
+    				break;
 	    			
 
 
 	    		case Event::MouseMoved:
 	    			if(mouse_pressed_on_pawn) {
-	    				rook.setPosition(mouse_pos - decalage_mouse_pawn);
+	    				pawns[n].setPosition(mouse_pos - decalage_mouse_pawn);
 	    			}
     		}
 
@@ -86,8 +129,10 @@ int main() {
 
 
     	window.clear();
-    	window.draw(sprite);
+    	window.draw(board);
     	window.draw(rook);
+    	for(int i=0;i<32;i++)
+    		window.draw(pawns[i]);
     	window.display();
     }
 
