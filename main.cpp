@@ -14,10 +14,10 @@ int main() {
     if(!board.loadFromFile("images/board.png"))
     	return EXIT_FAILURE;
 
-    IntRect size(0,0,50,55);
+    IntRect size_rook(0,0,50,55);
 
 
-    if(!pawns.loadFromFile("images/pawns.jpg", size))
+    if(!pawns.loadFromFile("images/pawns.jpg"))
     	return EXIT_FAILURE;
 
 
@@ -27,6 +27,9 @@ int main() {
     Sprite sprite(board);
 
     Sprite rook(pawns);
+    Sprite knight(pawns);
+
+    rook.setTextureRect(size_rook);
 
     rook.setOrigin(-10,-10);
 
@@ -39,6 +42,8 @@ int main() {
 
     	Event event;
     	while(window.pollEvent(event)) {
+
+    		Vector2f mouse_pos = Vector2f(Mouse::getPosition(window));
 
     		switch(event.type) {
 
@@ -54,10 +59,10 @@ int main() {
 	    			// std::cout << "x pos " + std::to_string(Mouse::getPosition(window).x) + "\n";
 
 	    			// if mouse is on a pawn
-	    			if(rook.getGlobalBounds().contains(Vector2f(Mouse::getPosition(window))))	{
+	    			if(rook.getGlobalBounds().contains(mouse_pos))	{
 	    				std::cout << "pawn selected \n";
 	    				mouse_pressed_on_pawn = true;
-	    				decalage_mouse_pawn = Vector2f(Mouse::getPosition(window)) - rook.getPosition();
+	    				decalage_mouse_pawn = mouse_pos - rook.getPosition();
 	    			}
 	    			break;
 
@@ -73,7 +78,7 @@ int main() {
 
 	    		case Event::MouseMoved:
 	    			if(mouse_pressed_on_pawn) {
-	    				rook.setPosition(Vector2f(Mouse::getPosition(window)) - decalage_mouse_pawn);
+	    				rook.setPosition(mouse_pos - decalage_mouse_pawn);
 	    			}
     		}
 
